@@ -46,7 +46,7 @@ function CategoryPage() {
         </div>
       </div>
       <div className="mt-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {items.map((p) => <ProductCard key={p.id} product={p} />)}
+        {items.map((p) => (<ProductCard key={(p as { id: string }).id} product={p} />))}
       </div>
       {items.length === 0 && (
         <p className="text-center text-muted-foreground py-12">No products in this category yet.</p>
