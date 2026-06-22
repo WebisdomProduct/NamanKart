@@ -1,6 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ProductCard } from "@/components/ProductCard";
 import { findCategoryBySlug, productsByCategory } from "@/lib/mock-data";
+import type { Category, Product } from "@/lib/types";
 
 export const Route = createFileRoute("/category/$slug")({
   loader: ({ params }) => {
@@ -31,7 +32,7 @@ export const Route = createFileRoute("/category/$slug")({
 });
 
 function CategoryPage() {
-  const { cat, items } = Route.useLoaderData();
+  const { cat, items } = Route.useLoaderData() as { cat: Category; items: Product[] };
   return (
     <div className="container-page py-8">
       <div className="text-xs text-muted-foreground mb-2">
@@ -46,7 +47,7 @@ function CategoryPage() {
         </div>
       </div>
       <div className="mt-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {items.map((p) => (<ProductCard key={(p as { id: string }).id} product={p} />))}
+        {items.map((p) => (<ProductCard key={p.id} product={p} />))}
       </div>
       {items.length === 0 && (
         <p className="text-center text-muted-foreground py-12">No products in this category yet.</p>

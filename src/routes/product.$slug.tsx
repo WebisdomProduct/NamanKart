@@ -6,6 +6,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { useCart } from "@/lib/cart-store";
 import { formatINR } from "@/lib/format";
 import { categories, findProductBySlug, relatedProducts } from "@/lib/mock-data";
+import type { Product, Variant } from "@/lib/types";
 
 export const Route = createFileRoute("/product/$slug")({
   loader: ({ params }) => {
@@ -59,7 +60,7 @@ export const Route = createFileRoute("/product/$slug")({
 });
 
 function ProductPage() {
-  const { product, related } = Route.useLoaderData();
+  const { product, related } = Route.useLoaderData() as { product: Product; related: Product[] };
   const [variantId, setVariantId] = useState(product.variants?.[0]?.id);
   const [qty, setQty] = useState(1);
   const [tab, setTab] = useState<"details" | "specs" | "shipping" | "reviews">("details");
@@ -68,7 +69,7 @@ function ProductPage() {
   const wished = useCart((s) => s.wishlist.includes(product.id));
   const navigate = useNavigate();
 
-  const variant = product.variants?.find((v) => v.id === variantId);
+  const variant = product.variants?.find((v: Variant) => v.id === variantId);
   const price = variant?.salePrice ?? variant?.price ?? product.salePrice ?? product.basePrice;
   const base = variant?.price ?? product.basePrice;
   const off = base > price ? Math.round(((base - price) / base) * 100) : 0;
@@ -128,7 +129,7 @@ function ProductPage() {
             <div className="mt-6">
               <p className="text-sm font-medium mb-2">Choose variant</p>
               <div className="flex flex-wrap gap-2">
-                {product.variants.map((v) => (
+                {product.variants.map((v: Variant) => (
                   <button
                     key={v.id}
                     onClick={() => setVariantId(v.id)}
@@ -226,7 +227,7 @@ function ProductPage() {
         <section className="mt-12">
           <h2 className="font-display text-2xl text-maroon mb-6">You may also like</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {related.map((p) => <ProductCard key={p.id} product={p} />)}
+            {related.map((p: Product) => <ProductCard key={p.id} product={p} />)}
           </div>
         </section>
       )}

@@ -5,6 +5,8 @@ import { ProductCard } from "@/components/ProductCard";
 import { categories, products } from "@/lib/mock-data";
 import { useMemo } from "react";
 
+type ShopSearch = { cat?: string; sort: "popular" | "low" | "high" | "new"; max?: number };
+
 const searchSchema = z.object({
   cat: fallback(z.string().optional(), undefined),
   sort: fallback(z.enum(["popular", "low", "high", "new"]), "popular").default("popular"),
@@ -53,7 +55,7 @@ function ShopPage() {
             <ul className="space-y-1 text-sm">
               <li>
                 <button
-                  onClick={() => navigate({ search: (p) => ({ ...p, cat: undefined }) })}
+                  onClick={() => navigate({ search: (p: ShopSearch) => ({ ...p, cat: undefined }) })}
                   className={"hover:text-saffron " + (!cat ? "text-saffron font-medium" : "")}
                 >
                   All categories
@@ -62,7 +64,7 @@ function ShopPage() {
               {categories.map((c) => (
                 <li key={c.slug}>
                   <button
-                    onClick={() => navigate({ search: (p) => ({ ...p, cat: c.slug }) })}
+                    onClick={() => navigate({ search: (p: ShopSearch) => ({ ...p, cat: c.slug }) })}
                     className={"hover:text-saffron " + (cat === c.slug ? "text-saffron font-medium" : "")}
                   >
                     {c.emoji} {c.name}
@@ -77,7 +79,7 @@ function ShopPage() {
               {[500, 1000, 2000, 5000].map((m) => (
                 <button
                   key={m}
-                  onClick={() => navigate({ search: (p) => ({ ...p, max: max === m ? undefined : m }) })}
+                  onClick={() => navigate({ search: (p: ShopSearch) => ({ ...p, max: max === m ? undefined : m }) })}
                   className={"px-3 py-1 rounded-full border " + (max === m ? "bg-saffron text-saffron-foreground border-saffron" : "border-border hover:border-saffron")}
                 >
                   Under ₹{m}
@@ -91,7 +93,7 @@ function ShopPage() {
           <div className="flex justify-end mb-4">
             <select
               value={sort}
-              onChange={(e) => navigate({ search: (p) => ({ ...p, sort: e.target.value as "popular" | "low" | "high" | "new" }) })}
+              onChange={(e) => navigate({ search: (p: ShopSearch) => ({ ...p, sort: e.target.value as ShopSearch["sort"] }) })}
               className="text-sm border border-border rounded-md px-3 py-1.5 bg-card"
             >
               <option value="popular">Most Popular</option>

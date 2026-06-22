@@ -5,7 +5,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { searchProducts } from "@/lib/mock-data";
 
 export const Route = createFileRoute("/search")({
-  head: ({ loaderData }) => ({
+  head: () => ({
     meta: [
       { title: "Search — NamanKart" },
       { name: "robots", content: "noindex" },
