@@ -64,6 +64,7 @@ function ProductPage() {
   const [variantId, setVariantId] = useState(product.variants?.[0]?.id);
   const [qty, setQty] = useState(1);
   const [tab, setTab] = useState<"details" | "specs" | "shipping" | "reviews">("details");
+  const [activeImg, setActiveImg] = useState(0);
   const add = useCart((s) => s.add);
   const toggleWish = useCart((s) => s.toggleWish);
   const wished = useCart((s) => s.wishlist.includes(product.id));
@@ -94,16 +95,26 @@ function ProductPage() {
       <div className="grid md:grid-cols-2 gap-8">
         {/* Gallery */}
         <div>
-          <div className="aspect-square rounded-2xl bg-gradient-to-br from-cream via-background to-cream border border-border flex items-center justify-center text-[10rem]">
-            <span>{cat?.emoji ?? "🪔"}</span>
+          <div className="aspect-square rounded-2xl overflow-hidden border border-border bg-cream">
+            <img
+              src={product.images[activeImg] ?? product.images[0]}
+              alt={product.name}
+              className="w-full h-full object-cover"
+            />
           </div>
-          <div className="mt-3 grid grid-cols-4 gap-2">
-            {[0,1,2,3].map((i) => (
-              <div key={i} className="aspect-square rounded-md bg-cream border border-border flex items-center justify-center text-3xl opacity-70">
-                {cat?.emoji ?? "🪔"}
-              </div>
-            ))}
-          </div>
+          {product.images.length > 1 && (
+            <div className="mt-3 grid grid-cols-4 gap-2">
+              {product.images.slice(0, 4).map((src, i) => (
+                <button
+                  key={src + i}
+                  onClick={() => setActiveImg(i)}
+                  className={"aspect-square rounded-md overflow-hidden border " + (activeImg === i ? "border-saffron ring-2 ring-saffron/30" : "border-border")}
+                >
+                  <img src={src} alt="" className="w-full h-full object-cover" loading="lazy" />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Info */}

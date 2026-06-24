@@ -4,7 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useCart } from "@/lib/cart-store";
 import { computeShipping, formatINR, FREE_SHIPPING_THRESHOLD } from "@/lib/format";
-import { categories, products } from "@/lib/mock-data";
+import { products } from "@/lib/mock-data";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({ meta: [{ title: "Your Cart — NamanKart" }] }),
@@ -57,10 +57,11 @@ function CartPage() {
       <div className="grid md:grid-cols-[1fr_360px] gap-8">
         <div className="space-y-3">
           {detailed.map((it) => {
-            const cat = categories.find((c) => c.slug === it.p!.categorySlug);
             return (
               <div key={it.productId + (it.variantId ?? "")} className="flex gap-4 border border-border rounded-lg bg-card p-3">
-                <div className="w-24 h-24 rounded-md bg-cream flex items-center justify-center text-4xl shrink-0">{cat?.emoji}</div>
+                <div className="w-24 h-24 rounded-md overflow-hidden bg-cream shrink-0">
+                  <img src={it.p!.images[0]} alt={it.p!.name} className="w-full h-full object-cover" loading="lazy" />
+                </div>
                 <div className="flex-1 min-w-0">
                   <Link to="/product/$slug" params={{ slug: it.p!.slug }} className="font-medium hover:text-saffron line-clamp-2">{it.p!.name}</Link>
                   {it.v && <p className="text-xs text-muted-foreground">{it.v.name}</p>}
