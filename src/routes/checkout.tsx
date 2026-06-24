@@ -63,7 +63,16 @@ function CheckoutPage() {
     setLoading(true);
     try {
       if (paymentMethod === "razorpay") {
-        const res = await startRazorpayPayment(total);
+        const res = await startRazorpayPayment(total, {
+          name: parsed.data.fullName,
+          email: parsed.data.email,
+          contact: parsed.data.phone,
+        });
+        if (res.cancelled) {
+          toast.message("Payment cancelled");
+          setLoading(false);
+          return;
+        }
         if (!res.paid) throw new Error("Payment failed");
       }
       const order = await api.createOrder({
@@ -111,7 +120,7 @@ function CheckoutPage() {
                 <input type="radio" checked={paymentMethod === "razorpay"} onChange={() => setPaymentMethod("razorpay")} className="mt-1"/>
                 <div>
                   <p className="font-medium text-sm">Razorpay — UPI / Cards / Net Banking</p>
-                  <p className="text-xs text-muted-foreground">Secure online payment. <span className="text-saffron">(Demo mode — wire up real Razorpay later.)</span></p>
+                  <p className="text-xs text-muted-foreground">Secure online payment via Razorpay. Currently in TEST mode — use a Razorpay test card or UPI ID at checkout.</p>
                 </div>
               </label>
               <label className={"flex items-start gap-3 p-3 border rounded-md cursor-pointer " + (paymentMethod === "cod" ? "border-saffron bg-saffron/5" : "border-border")}>
