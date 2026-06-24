@@ -76,23 +76,88 @@ export const api = {
 /**
  * RAZORPAY INTEGRATION POINT
  *
- * Replace this stub with the real Razorpay flow once you have a backend:
+ * Wired against Razorpay TEST mode using the publishable Key ID. The Key Secret
+ * is server-only and must NEVER be added to the frontend bundle.
  *
- *   1. Backend: POST /api/payments/razorpay/order  -> creates a Razorpay order,
- *      returns { orderId, amount, currency, keyId }.
- *   2. Frontend: load https://checkout.razorpay.com/v1/checkout.js,
- *      open Razorpay({ key, order_id, amount, ... handler }).
- *   3. Backend: POST /api/payments/razorpay/verify -> verify signature with
- *      crypto HMAC and mark order paid.
+ * Current flow (frontend-only, no backend):
+ *   - Loads checkout.razorpay.com/v1/checkout.js on demand
+ *   - Opens Razorpay Checkout in "amount" mode (no server-issued order_id)
+ *   - On success, returns the payment_id; we mark the order as `paid`
  *
- * Required env vars when you wire it up:
- *   - VITE_RAZORPAY_KEY_ID   (publishable, safe in frontend)
- *   - RAZORPAY_KEY_SECRET    (backend only, NEVER ship to frontend)
+ * IMPORTANT: without a backend, the payment signature is NOT verified. Before
+ * going LIVE, add a backend route that:
+ *   1) POST /api/payments/razorpay/order  -> creates a Razorpay order with
+ *      RAZORPAY_KEY_SECRET and returns { orderId, amount, currency, keyId }
+ *   2) POST /api/payments/razorpay/verify -> verifies razorpay_signature
+ *      using HMAC-SHA256(order_id + "|" + payment_id, RAZORPAY_KEY_SECRET)
+ *   Then pass `order_id` into the options below instead of `amount` only.
  */
-export async function startRazorpayPayment(orderTotal: number): Promise<{ paid: boolean; ref?: string }> {
-  // TODO: replace with real Razorpay checkout.
-  await new Promise((r) => setTimeout(r, 700));
-  return { paid: true, ref: "rzp_mock_" + Math.random().toString(36).slice(2, 10) };
+export const RAZORPAY_KEY_ID =
+  (import.meta.env.VITE_RAZORPAY_KEY_ID as string | undefined) ||
+  "rzp_test_T5RMAJzrOvuEMP";
+
+type RazorpaySuccess = {
+  razorpay_payment_id: string;
+  razorpay_order_id?: string;
+  razorpay_signature?: string;
+};
+
+declare global {
+  interface Window {
+    Razorpay?: new (options: Record<string, unknown>) => { open: () => void };
+  }
+}
+
+function loadRazorpayScript(): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (typeof window === "undefined") return resolve(false);
+    if (window.Razorpay) return resolve(true);
+    const s = document.createElement("script");
+    s.src = "https://checkout.razorpay.com/v1/checkout.js";
+    s.async = true;
+    s.onload = () => resolve(true);
+    s.onerror = () => resolve(false);
+    document.body.appendChild(s);
+  });
+}
+
+export async function startRazorpayPayment(
+  orderTotal: number,
+  prefill?: { name?: string; email?: string; contact?: string },
+): Promise<{ paid: boolean; ref?: string; cancelled?: boolean }> {
+  const ok = await loadRazorpayScript();
+  if (!ok || !window.Razorpay) {
+    throw new Error("Could not load Razorpay. Check your internet connection.");
+  }
+
+  return new Promise((resolve, reject) => {
+    const rzp = new window.Razorpay!({
+      key: RAZORPAY_KEY_ID,
+      amount: Math.round(orderTotal * 100), // paise
+      currency: "INR",
+      name: "NamanKart",
+      description: "Devotional products order",
+      image: "/favicon.ico",
+      prefill: {
+        name: prefill?.name ?? "",
+        email: prefill?.email ?? "",
+        contact: prefill?.contact ?? "",
+      },
+      notes: { source: "namankart-web" },
+      theme: { color: "#C8102E" },
+      handler: (resp: RazorpaySuccess) => {
+        resolve({ paid: true, ref: resp.razorpay_payment_id });
+      },
+      modal: {
+        ondismiss: () => resolve({ paid: false, cancelled: true }),
+      },
+    });
+    try {
+      rzp.open();
+    } catch (e) {
+      reject(e);
+    }
+  });
 }
 
 void delay; void api; void products;

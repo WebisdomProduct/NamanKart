@@ -20,13 +20,48 @@ export const categories: Category[] = [
 let id = 0;
 const nextId = () => String(++id).padStart(4, "0");
 
+// Real product photography from Pexels (free, royalty-free, no attribution required
+// but appreciated). Swap with your own photos once available.
+const img = (pid: number) =>
+  `https://images.pexels.com/photos/${pid}/pexels-photo-${pid}.jpeg?auto=compress&cs=tinysrgb&w=900`;
+
+const IMG: Record<string, string[]> = {
+  "tulsi-japa-mala-108": [img(9271144), img(9271172), img(13736490)],
+  "tulsi-kanthi-mala": [img(31513865), img(6083683), img(13319597)],
+  "tulsi-mahamantra-mala": [img(10133414), img(9271144), img(13736490)],
+  "tulsi-locket-mala": [img(9271156), img(9271180), img(9271147)],
+  "rudraksha-5-mukhi-mala": [img(9271144), img(9271172), img(13736490)],
+  "neem-wood-mala": [img(10133414), img(13319597), img(31513865)],
+  "rudraksha-bracelet": [img(31757022), img(9271144), img(20429577)],
+  "pyrite-bracelet": [img(36854165), img(31757022), img(20429577)],
+  "tulsi-ear-tops": [img(31757022), img(31513865), img(36854165)],
+  "radha-krishna-locket": [img(18906862), img(31513875), img(31689680)],
+  "ram-naam-pendant": [img(31689680), img(9271180), img(9271156)],
+  "puja-thali-set": [img(26245461), img(31513869), img(12517422)],
+  "ashtagandh-powder": [img(9271156), img(9271180), img(9271147)],
+  "havan-samagri": [img(30711078), img(29039041), img(774378)],
+  "dhoop-sticks": [img(774378), img(17840022), img(17840020)],
+  "rose-attar": [img(12456282), img(12456278), img(774378)],
+  "chandan-attar": [img(13970073), img(36188472), img(15124740)],
+  "copper-water-bottle": [img(8634411), img(13871766), img(8634417)],
+  "akhand-jyot-diya": [img(35736633), img(29629443), img(18194577)],
+  "brass-ganesh-idol": [img(19982575), img(28010215), img(32665109)],
+  "brass-krishna-idol": [img(18906862), img(31689680), img(31513875)],
+  "bhagavad-gita-book": [img(31513875), img(31513865), img(31513863)],
+  "wooden-charan-paduka": [img(12306754), img(11473711), img(9442883)],
+  "56-bhog-prasad": [img(35149452), img(38015723), img(37015886)],
+  "bhakti-starter-pack": [img(31513869), img(9271156), img(774378)],
+  "bhakti-premium-pack": [img(26245461), img(12456282), img(35149452)],
+};
+
 function p(partial: Omit<Product, "id" | "rating" | "reviewCount" | "stock" | "images" | "tags"> & Partial<Product>): Product {
+  const slug = partial.slug as string;
   return {
     id: nextId(),
     rating: +(3.8 + Math.random() * 1.2).toFixed(1),
     reviewCount: Math.floor(20 + Math.random() * 480),
     stock: 25,
-    images: [`/placeholder.svg`],
+    images: IMG[slug] ?? [img(9271144)],
     tags: [],
     ...partial,
   } as Product;
