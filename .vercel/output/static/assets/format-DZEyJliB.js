@@ -1,0 +1,1 @@
+var e=e=>new Intl.NumberFormat(`en-IN`,{style:`currency`,currency:`INR`,maximumFractionDigits:0}).format(e),t=e=>e>=999?0:79;export{e as n,t};

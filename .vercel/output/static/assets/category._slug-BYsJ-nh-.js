@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime-DGeXAQPT.js";import{t}from"./link-Ds4eKWKt.js";var n=e(),r=()=>(0,n.jsxs)(`div`,{className:`container-page py-16 text-center`,children:[(0,n.jsx)(`h1`,{className:`font-display text-3xl`,children:`Category not found`}),(0,n.jsx)(t,{to:`/shop`,className:`text-saffron mt-4 inline-block`,children:`← Back to shop`})]});export{r as notFoundComponent};
