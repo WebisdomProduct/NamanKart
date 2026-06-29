@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useCart } from "@/lib/cart-store";
 import { categories } from "@/lib/mock-data";
 import { CrossLinkStrip } from "./CrossLinkStrip";
+import { BrandLogo } from "./BrandLogo";
 
 export function Header() {
   const count = useCart((s) => s.items.reduce((n, x) => n + x.qty, 0));
@@ -26,9 +27,8 @@ export function Header() {
           <Menu className="h-5 w-5" />
         </button>
 
-        <Link to="/" className="flex items-baseline gap-1">
-          <span className="font-display text-2xl font-bold text-maroon">Naman</span>
-          <span className="font-display text-2xl font-bold text-saffron">Kart</span>
+        <Link to="/" className="flex items-center">
+          <BrandLogo compact className="" />
         </Link>
 
         <form onSubmit={onSearch} className="hidden md:flex flex-1 mx-6 max-w-xl">

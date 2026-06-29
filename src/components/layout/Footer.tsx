@@ -1,14 +1,13 @@
 import { Link } from "@tanstack/react-router";
 import { categories } from "@/lib/mock-data";
+import { BrandLogo } from "./BrandLogo";
 
 export function Footer() {
   return (
     <footer className="mt-20 bg-maroon text-maroon-foreground">
       <div className="container-page py-12 grid gap-10 md:grid-cols-4">
         <div>
-          <div className="font-display text-2xl">
-            <span className="text-gold">Naman</span>Kart
-          </div>
+          <BrandLogo className="mb-3" />
           <p className="mt-3 text-sm opacity-80">
             Authentic, temple-sourced devotional products — delivered with love across India.
           </p>
